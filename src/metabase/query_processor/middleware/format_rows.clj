@@ -3,10 +3,10 @@
    Currently, the only thing this does is convert datetime types to ISO-8601 strings in the appropriate timezone."
   (:require
    [java-time.api :as t]
-   [metabase.perf-util :as perf]
    [metabase.query-processor.timezone :as qp.timezone]
    [metabase.util.date-2 :as u.date]
    [metabase.util.log :as log]
+   [metabase.util.performance :as perf]
    [potemkin.types :as p.types])
   (:import
    (java.time Instant LocalDate LocalDateTime LocalTime OffsetDateTime OffsetTime ZonedDateTime ZoneId)))

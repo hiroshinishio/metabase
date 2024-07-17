@@ -1,4 +1,4 @@
-(ns metabase.perf-util
+(ns metabase.util.performance
   "Functions and utilities for faster processing."
   (:refer-clojure :exclude [reduce mapv]))
 

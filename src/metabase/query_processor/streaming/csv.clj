@@ -3,12 +3,12 @@
    [clojure.data.csv]
    [java-time.api :as t]
    [metabase.formatter :as formatter]
-   [metabase.perf-util :as perf]
    [metabase.query-processor.pivot.postprocess :as qp.pivot.postprocess]
    [metabase.query-processor.streaming.common :as common]
    [metabase.query-processor.streaming.interface :as qp.si]
    [metabase.shared.models.visualization-settings :as mb.viz]
-   [metabase.util.date-2 :as u.date])
+   [metabase.util.date-2 :as u.date]
+   [metabase.util.performance :as perf])
   (:import
    (java.io BufferedWriter OutputStream OutputStreamWriter)
    (java.nio.charset StandardCharsets)))
@@ -47,8 +47,8 @@
                    (loop [i 0]
                      (if (>= i n) false
                          (let [ch (.charAt s (unchecked-int i))]
-                           (if (or (= ch \,) ;; separator
-                                   (= ch \") ;; quote
+                           (if (or (= ch separator)
+                                   (= ch quote)
                                    (= ch \return)
                                    (= ch \newline))
                              true
