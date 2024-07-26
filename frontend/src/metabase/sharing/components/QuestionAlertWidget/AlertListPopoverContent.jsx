@@ -13,15 +13,15 @@ import {
   getDayOfWeekOptions,
   HOUR_OPTIONS,
 } from "metabase/lib/date-time";
+import { getQuestionAlerts } from "metabase/query_builder/selectors";
+import { getUser } from "metabase/selectors/user";
 import {
   CreateAlertModalContent,
   UpdateAlertModalContent,
-} from "metabase/query_builder/components/AlertModals";
-import { getQuestionAlerts } from "metabase/query_builder/selectors";
-import { getUser } from "metabase/selectors/user";
+} from "metabase/sharing/components/AlertModals";
 import { Icon } from "metabase/ui";
 
-class AlertListPopoverContent extends Component {
+class _AlertListPopoverContent extends Component {
   state = {
     adding: false,
     hasJustUnsubscribedFromOwnAlert: false,
@@ -113,10 +113,10 @@ class AlertListPopoverContent extends Component {
   }
 }
 
-export default connect(
+export const AlertListPopoverContent = connect(
   state => ({ questionAlerts: getQuestionAlerts(state), user: getUser(state) }),
   null,
-)(AlertListPopoverContent);
+)(_AlertListPopoverContent);
 
 class AlertListItemInner extends Component {
   state = {

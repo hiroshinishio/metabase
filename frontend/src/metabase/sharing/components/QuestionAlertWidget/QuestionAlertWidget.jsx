@@ -7,11 +7,10 @@ import Popover from "metabase/components/Popover";
 import CS from "metabase/css/core/index.css";
 import { Icon } from "metabase/ui";
 
-import AlertListPopoverContent from "../AlertListPopoverContent";
-
+import {AlertListPopoverContent} from "./AlertListPopoverContent";
 import { AlertIcon } from "./QuestionAlertWidget.styled";
 
-export default class QuestionAlertWidget extends Component {
+export class QuestionAlertWidget extends Component {
   state = {
     isOpen: false,
     // this isFrozen nonsense is due to AlertListPopoverContent containing a <Modal>
