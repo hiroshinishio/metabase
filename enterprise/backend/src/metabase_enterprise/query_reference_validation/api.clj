@@ -5,6 +5,7 @@
    [metabase.api.common :as api]
    [metabase.api.routes.common :refer [+auth]]
    [metabase.models.query-field :as query-field]
+   [metabase.public-settings :as public-settings]
    [metabase.server.middleware.offset-paging :as mw.offset-paging]
    [toucan2.core :as t2]))
 
@@ -89,4 +90,14 @@
      :limit  mw.offset-paging/*limit*
      :offset mw.offset-paging/*offset*}))
 
-(api/define-routes api/+check-superuser +auth)
+(defn +check-setting
+  "Middleware that returns a 401 response if `request` has no associated `:metabase-user-id`."
+  [handler]
+  (with-meta
+   (fn [request respond raise]
+     (if (public-settings/query-analysis-enabled)
+       (handler request respond raise)
+       (respond {:status 429 :body "Query Analysis must be enabled to use the Query Reference Validator"})))
+   (meta handler)))
+
+(api/define-routes api/+check-superuser +auth +check-setting)

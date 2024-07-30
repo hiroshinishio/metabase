@@ -59,7 +59,8 @@
                                                               :column   "FC"
                                                               :field_id field-3}]
      (mt/with-premium-features #{:query-reference-validation}
-       (mt/call-with-map-params f [card-1 card-2 card-3 card-4 qf-1 qf-1b qf-2 qf-3])))))
+       (mt/with-temporary-setting-values [query-analysis-enabled true]
+         (mt/call-with-map-params f [card-1 card-2 card-3 card-4 qf-1 qf-1b qf-2 qf-3]))))))
 
 (defmacro ^:private with-test-setup
   "Creates some non-stale QueryFields and anaphorically provides stale QueryField IDs called `qf-{1-3}` and `qf-1b` and
@@ -170,6 +171,13 @@
       (is (= (str "Query Reference Validation is a paid feature not currently available to your instance. Please upgrade to"
                   " use it. Learn more at metabase.com/upgrade/")
              (mt/user-http-request :crowberto :get 402 url))))))
+
+(deftest setting-test
+  (testing "It requires the query analysis setting"
+    (with-test-setup
+      (mt/with-temporary-setting-values [query-analysis-enabled false]
+        (is (= "Query Analysis must be enabled to use the Query Reference Validator"
+               (mt/user-http-request :crowberto :get 429 url)))))))
 
 (defn- strip-unrelated
   "This is a despearate workaround to trim the diffs from qv=. Ideally we rather make qv= smarter."
