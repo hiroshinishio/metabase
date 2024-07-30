@@ -58,7 +58,7 @@ describe("scenarios > dashboard > dashboard back navigation", () => {
 
     visitDashboard(ORDERS_DASHBOARD_ID);
     cy.wait("@dashboard");
-    cy.findByTestId("dashcard").findByText("Orders").click();
+    cy.findByTestId("dashcard").findByText("Orders123123").click();
     cy.wait("@cardQuery");
     cy.findByLabelText(backButtonLabel).should("be.visible");
     cy.icon("notebook").click();
