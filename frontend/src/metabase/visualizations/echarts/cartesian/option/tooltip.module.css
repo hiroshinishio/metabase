@@ -1,0 +1,7 @@
+.ChartTooltip {
+  font: unset !important;
+  background-color: var(--mb-color-bg-black) !important;
+  border: none !important;
+  padding: 0 !important;
+  color: var(--mb-color-text-white) !important;
+}

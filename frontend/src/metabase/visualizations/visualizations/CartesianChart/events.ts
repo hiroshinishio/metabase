@@ -8,6 +8,7 @@ import {
   parseTimestamp,
 } from "metabase/lib/time-dayjs";
 import { checkNumber, isNotNull } from "metabase/lib/types";
+import { formatValueForTooltip } from "metabase/visualizations/components/ChartTooltip/utils";
 import {
   ORIGINAL_INDEX_DATA_KEY,
   X_AXIS_DATA_KEY,
@@ -36,7 +37,6 @@ import {
   isRemappedToString,
 } from "metabase/visualizations/lib/renderer_utils";
 import { dimensionIsTimeseries } from "metabase/visualizations/lib/timeseries";
-import { formatValueForTooltip } from "metabase/visualizations/lib/tooltip";
 import { getFriendlyName } from "metabase/visualizations/lib/utils";
 import type {
   ComputedVisualizationSettings,
@@ -377,10 +377,8 @@ const isValidDatumElement = (
   return element?.getAttribute("d") === CIRCLE_PATH;
 };
 
-export const getSeriesHoverData = (
+export const getSeriesHovered = (
   chartModel: BaseCartesianChartModel,
-  settings: ComputedVisualizationSettings,
-  display: string,
   event: EChartsSeriesMouseEvent,
 ) => {
   const { dataIndex: echartsDataIndex, seriesId } = event;
@@ -394,11 +392,26 @@ export const getSeriesHoverData = (
     return;
   }
 
-  const target = event.event.event.target as SVGElement | undefined;
+  return {
+    index: seriesIndex,
+    datumIndex: dataIndex,
+  };
+};
 
-  // TODO: For some reason ECharts sometimes trigger series mouse move element with the root SVG as target
-  // Find a better fix
-  if (!isValidDatumElement(target, event.seriesType)) {
+export const getSeriesHoverData = (
+  chartModel: BaseCartesianChartModel,
+  settings: ComputedVisualizationSettings,
+  display: string,
+  echartsDataIndex: number,
+  seriesId: DataKey,
+) => {
+  const dataIndex = getDataIndex(
+    chartModel.transformedDataset,
+    echartsDataIndex,
+  );
+  const seriesIndex = findSeriesModelIndexById(chartModel, seriesId);
+
+  if (seriesIndex < 0 || dataIndex == null) {
     return;
   }
 
@@ -420,11 +433,107 @@ export const getSeriesHoverData = (
     isAlreadyScaled: true,
     index: seriesIndex,
     datumIndex: dataIndex,
-    event: event.event.event,
-    element: target,
     data,
     footerData,
     stackedTooltipModel,
+  };
+};
+
+export const getItemTooltipData = (
+  chartModel: BaseCartesianChartModel,
+  settings: ComputedVisualizationSettings,
+  echartsDataIndex: number,
+  seriesId: DataKey,
+) => {
+  const dataIndex = getDataIndex(
+    chartModel.transformedDataset,
+    echartsDataIndex,
+  );
+  const seriesIndex = findSeriesModelIndexById(chartModel, seriesId);
+
+  if (seriesIndex < 0 || dataIndex == null) {
+    return null;
+  }
+
+  const hoveredSeries = chartModel.seriesModels[seriesIndex];
+
+  const datum = chartModel.dataset[dataIndex];
+  const header = { text: hoveredSeries.name, indicator: hoveredSeries.color };
+
+  const rows = [
+    {
+      name: hoveredSeries.tooltipName,
+      values: [
+        formatValueForTooltip({
+          value: datum[hoveredSeries.dataKey],
+          column: hoveredSeries.column,
+          settings,
+          isAlreadyScaled: true,
+        }),
+      ],
+    },
+  ];
+
+  // FIXME: remove hardcoded display
+  const footerData = getTooltipFooterData(
+    chartModel,
+    "line",
+    seriesIndex,
+    dataIndex,
+  );
+
+  // TODO: Refactor
+  if (footerData?.[0] != null) {
+    const comparison = footerData[0];
+    rows.push({ name: comparison.key, values: [comparison.value] });
+  }
+  return {
+    header,
+    rows,
+  };
+};
+
+export const getAxisTooltipData = (
+  chartModel: BaseCartesianChartModel,
+  settings: ComputedVisualizationSettings,
+  echartsDataIndex: number,
+) => {
+  const dataIndex = getDataIndex(
+    chartModel.transformedDataset,
+    echartsDataIndex,
+  );
+
+  if (dataIndex == null) {
+    return null;
+  }
+
+  const datum = chartModel.dataset[dataIndex];
+
+  const dimensionValue = formatValueForTooltip({
+    value: datum[X_AXIS_DATA_KEY],
+    column: chartModel.dimensionModel.column,
+    settings,
+  });
+  const header = {
+    text: dimensionValue,
+  };
+
+  const rows = chartModel.seriesModels.map(seriesModel => ({
+    name: seriesModel.name,
+    indicator: seriesModel.color,
+    values: [
+      formatValueForTooltip({
+        value: datum[seriesModel.dataKey],
+        column: seriesModel.column,
+        settings,
+        isAlreadyScaled: true,
+      }),
+    ],
+  }));
+
+  return {
+    header,
+    rows,
   };
 };
 

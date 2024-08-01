@@ -1,7 +1,8 @@
 import type { EChartsCoreOption, EChartsType } from "echarts/core";
 import type * as React from "react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useDebouncedValue } from "metabase/hooks/use-debounced-value";
 import {
   GOAL_LINE_SERIES_ID,
   ORIGINAL_INDEX_DATA_KEY,
@@ -23,7 +24,6 @@ import {
   getBrushData,
   getGoalLineHoverData,
   getSeriesClickData,
-  getSeriesHoverData,
   getTimelineEventsForEvent,
   getTimelineEventsHoverData,
   hasSelectedTimelineEvents,
@@ -31,6 +31,8 @@ import {
 import type { CardId } from "metabase-types/api";
 
 import { getHoveredEChartsSeriesDataKeyAndIndex } from "./utils";
+
+const TOOLTIP_MODE_SWITCH_THRESHOLD_MS = 20;
 
 export const useChartEvents = (
   chartRef: React.MutableRefObject<EChartsType | undefined>,
@@ -54,6 +56,13 @@ export const useChartEvents = (
     isDashboard,
   }: VisualizationProps,
 ) => {
+  const [tooltipMode, setTooltipMode] = useState<"axis" | "item" | "none">(
+    "axis",
+  );
+  const debouncedTooltipMode = useDebouncedValue(
+    tooltipMode,
+    TOOLTIP_MODE_SWITCH_THRESHOLD_MS,
+  );
   const isBrushing = useRef<boolean>();
 
   const onOpenQuestion = useCallback(
@@ -75,6 +84,7 @@ export const useChartEvents = (
         eventName: "mouseout",
         query: "series",
         handler: () => {
+          setTooltipMode("axis");
           onHoverChange?.(null);
         },
       },
@@ -103,22 +113,9 @@ export const useChartEvents = (
             return;
           }
 
-          const hoveredData = getSeriesHoverData(
-            chartModel,
-            settings,
-            rawSeries[0].card.display,
-            event,
-          );
-
-          const isSameDatumHovered =
-            hoveredData?.index === hovered?.index &&
-            hoveredData?.datumIndex === hovered?.datumIndex;
-
-          if (isSameDatumHovered) {
-            return;
-          }
-
-          onHoverChange?.(hoveredData);
+          setTooltipMode("item");
+          // const hoveredObject = getSeriesHovered(chartModel, event);
+          // onHoverChange?.(hoveredObject);
         },
       },
       {
@@ -186,7 +183,6 @@ export const useChartEvents = (
       onOpenQuestion,
       rawSeries,
       metadata,
-      hovered,
       selectedTimelineEventIds,
       settings,
       timelineEventsModel,
@@ -198,6 +194,19 @@ export const useChartEvents = (
       onSelectTimelineEvents,
       onDeselectTimelineEvents,
     ],
+  );
+
+  useEffect(
+    function updateTooltipMode() {
+      if (debouncedTooltipMode === "none") {
+        chartRef.current?.setOption({ tooltip: { show: false } }, false);
+      }
+      chartRef.current?.setOption(
+        { tooltip: { trigger: debouncedTooltipMode } },
+        false,
+      );
+    },
+    [chartRef, debouncedTooltipMode],
   );
 
   useEffect(
