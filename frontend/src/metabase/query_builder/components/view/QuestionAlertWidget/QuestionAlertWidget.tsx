@@ -1,9 +1,8 @@
-/* eslint-disable react/prop-types */
 import cx from "classnames";
 import { useState, useRef } from "react";
 import { t } from "ttag";
 
-import { useListCardAlertsQuery } from "metabase/api";
+import { useListCardAlertsQuery, skipToken } from "metabase/api";
 import Popover from "metabase/components/Popover";
 import CS from "metabase/css/core/index.css";
 import { useSelector } from "metabase/lib/redux";
@@ -13,7 +12,7 @@ import type Question from "metabase-lib/v1/Question";
 import type { VisualizationSettings } from "metabase-types/api";
 
 import AlertListPopoverContent from "./AlertListPopoverContent";
-import { AlertIcon } from "./QuestionAlertWidget.unit.spec";
+import { AlertIcon } from "./QuestionAlertWidget.styled";
 
 export function QuestionAlertWidget({
   question,
@@ -29,7 +28,7 @@ export function QuestionAlertWidget({
   const [isFrozen, setIsFrozen] = useState(false);
 
   const { data: questionAlerts } = useListCardAlertsQuery({
-    id: question.id(),
+    id: question.id() ?? skipToken,
   });
 
   const canManageSubscriptions = useSelector(_canManageSubscriptions);
