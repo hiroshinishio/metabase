@@ -1,10 +1,8 @@
 import { useMemo } from "react";
 
 import type { SdkPluginsConfig } from "embedding-sdk";
-
-import { InteractiveQuestionProvider } from "../public/InteractiveQuestion/context";
-
-import { InteractiveQuestionResult } from "./InteractiveQuestionResult";
+import { InteractiveQuestionProvider } from "../../public/InteractiveQuestion/context";
+import { InteractiveQuestionResult } from "../InteractiveQuestionResult";
 
 interface InteractiveAdHocQuestionProps {
   questionPath: string; // route path to load a question, e.g. /question/140-best-selling-products - for saved, or /question/xxxxxxx for ad-hoc encoded question config

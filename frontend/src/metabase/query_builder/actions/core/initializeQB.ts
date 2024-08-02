@@ -246,8 +246,16 @@ async function handleQBInit(
   {
     location,
     params,
-  }: { location: LocationDescriptorObject; params: QueryParams },
+  }: {
+    location: LocationDescriptorObject;
+    params: QueryParams;
+  },
 ) {
+  console.log({
+    location,
+    params,
+  });
+
   dispatch(resetQB());
   dispatch(cancelQuery());
 
@@ -257,6 +265,16 @@ async function handleQBInit(
   const { options, serializedCard } = parseHash(location.hash);
   const hasCard = cardId || serializedCard;
   const currentUser = getUser(getState());
+
+  console.log({
+    queryParams,
+    cardId,
+    uiControls,
+    options,
+    serializedCard,
+    hasCard,
+    currentUser,
+  });
 
   const deserializedCard = serializedCard
     ? deserializeCard(serializedCard)
@@ -268,6 +286,16 @@ async function handleQBInit(
     options,
     dispatch,
     getState,
+  });
+
+  console.log({
+    card,
+    originalCard,
+    deserializedCard,
+    options,
+    isSavedCard: isSavedCard(card),
+    archived: card.archived,
+    currentUser,
   });
 
   if (isSavedCard(card) && card.archived && !currentUser) {

@@ -1,4 +1,4 @@
-import { getQuestionParameters } from "./InteractiveAdHocQuestion";
+import { getQuestionParameters } from "enterprise/frontend/src/embedding-sdk/components/private/InteractiveAdHocQuestion/InteractiveAdHocQuestion";
 
 describe("getQuestionParameters", () => {
   it("should generate proper URL params for ad-hoc question", () => {

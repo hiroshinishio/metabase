@@ -1,6 +1,6 @@
 import { renderWithProviders, screen } from "__support__/ui";
-import { SdkGlobalStylesWrapper } from "embedding-sdk/components/private/SdkGlobalStylesWrapper";
-import { SdkThemeProvider } from "embedding-sdk/components/private/SdkThemeProvider";
+import { SdkGlobalStylesWrapper } from "embedding-sdk/components/private/SdkGlobalStylesWrapper/SdkGlobalStylesWrapper";
+import { SdkThemeProvider } from "embedding-sdk/components/private/SdkThemeProvider/SdkThemeProvider";
 import { Text } from "metabase/ui";
 import {
   createMockSettingsState,
