@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { t } from "ttag";
 
-import type {
-  EmbedMenuModes,
-  EmbedMenuProps,
-} from "metabase/dashboard/components/EmbedMenu/types";
 import {
   DashboardPublicLinkPopover,
   QuestionPublicLinkPopover,
@@ -16,11 +12,16 @@ import { getSetting } from "metabase/selectors/settings";
 import { Menu, Title, Text, Stack, Center, Icon } from "metabase/ui";
 
 import { AdminEmbedMenuContainer } from "./AdminEmbedMenu.styled";
+import type {
+  EmbedMenuModes,
+  EmbedMenuProps,
+} from "./types";
 
 export const AdminEmbedMenu = ({
   resource,
   resourceType,
   hasPublicLink,
+  onOpenModal,
 }: EmbedMenuProps) => {
   const [menuMode, setMenuMode] = useState<EmbedMenuModes>(null);
 
@@ -31,9 +32,6 @@ export const AdminEmbedMenu = ({
     getSetting(state, "enable-embedding"),
   );
 
-  const handleModalOpen = resourceType === "dashboard"
-    ? () => {}
-    : onOpenModal(MODAL_TYPES.EMBED);
 
   const target = (
     <ResourceEmbedButton hasBackground={resourceType === "dashboard"} />
@@ -91,7 +89,7 @@ export const AdminEmbedMenu = ({
           </Center>
         }
         disabled={!isEmbeddingEnabled}
-        onClick={onModalOpen}
+        onClick={onOpenModal}
       >
         {isEmbeddingEnabled ? (
           <Title order={4}>{t`Embed`}</Title>

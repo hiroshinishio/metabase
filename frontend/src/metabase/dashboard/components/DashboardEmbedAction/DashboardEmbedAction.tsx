@@ -3,8 +3,7 @@ import { useState } from "react";
 import { DashboardSharingEmbeddingModal } from "metabase/dashboard/containers/DashboardSharingEmbeddingModal";
 import { getDashboardComplete } from "metabase/dashboard/selectors";
 import { useSelector } from "metabase/lib/redux";
-
-import { EmbedMenu } from "../EmbedMenu";
+import { EmbedMenu } from "metabase/sharing/components/EmbedMenu";
 
 export const DashboardEmbedAction = () => {
   const dashboard = useSelector(getDashboardComplete);

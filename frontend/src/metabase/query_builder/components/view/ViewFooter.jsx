@@ -4,7 +4,6 @@ import { t } from "ttag";
 
 import ButtonBar from "metabase/components/ButtonBar";
 import CS from "metabase/css/core/index.css";
-import { EmbedMenu } from "metabase/dashboard/components/EmbedMenu";
 import { ResourceEmbedButton } from "metabase/public/components/ResourceEmbedButton";
 import QueryDownloadWidget from "metabase/query_builder/components/QueryDownloadWidget";
 import { MODAL_TYPES } from "metabase/query_builder/constants";
@@ -134,19 +133,18 @@ const ViewFooter = ({
             question,
             visualizationSettings,
           }) && (
-            // <QuestionAlertWidget
-            //   key="alerts"
-            //   className={cx(CS.hide, CS.smShow)}
-            //   canManageSubscriptions={canManageSubscriptions}
-            //   question={question}
-            //   questionAlerts={questionAlerts}
-            //   onCreateAlert={() =>
-            //     question.isSaved()
-            //       ? onOpenModal("create-alert")
-            //       : onOpenModal("save-question-before-alert")
-            //   }
-            // />
-            <div>FIXME</div>
+            <QuestionAlertWidget
+              key="alerts"
+              className={cx(CS.hide, CS.smShow)}
+              canManageSubscriptions={canManageSubscriptions}
+              question={question}
+              questionAlerts={questionAlerts}
+              onCreateAlert={() =>
+                question.isSaved()
+                  ? onOpenModal("create-alert")
+                  : onOpenModal("save-question-before-alert")
+              }
+            />
           ),
           type === "question" &&
             !question.isArchived() &&

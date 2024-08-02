@@ -1,52 +1,50 @@
-import { Menu } from "@mantine/core";
-import cx from "classnames";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import { useSetting } from "metabase/common/hooks";
-import CS from "metabase/css/index.module.css";
 import { useSelector } from "metabase/lib/redux";
 import { getUserIsAdmin } from "metabase/selectors/user";
-import { EmbedMenu } from "metabase/sharing/components/EmbedMenu";
-import {QuestionAlertWidget} from "metabase/sharing/components/QuestionAlertWidget";
 import type Question from "metabase-lib/v1/Question";
 
-import { SharingMenu } from "./SharingMenu";
+import { EmbedMenuItem } from "../EmbedMenu/EmbedMenuItem";
+import { PublicLinkMenuItem } from "../EmbedMenu/PublicLinkMenuItem";
 
+import { SharingMenu } from "./SharingMenu";
+import { SharingModals } from "./SharingModals";
+import type { SharingModalType } from "./types";
 
 
 export function QuestionSharingMenu({ question }: { question: Question }) {
-
-  if (!question?.isSaved()) {
-    return null;
-  }
-
+  const [modalType, setModalType] = useState<SharingModalType | null>(null);
   const isPublicSharingEnabed = useSetting("enable-public-sharing");
   const isEmbeddingEnabled = useSetting("enable-embedding");
   const isAdmin = useSelector(getUserIsAdmin);
-  const canManageSubscriptions = useSelector(state => state.currentUser?.is_superuser);
 
   const hasPublicLink = !!question.publicUUID();
 
+  const canShare = isAdmin || (isPublicSharingEnabed || isEmbeddingEnabled);
+
+  const sharingMenuRef = useRef(null);
+
+  if (!question?.isSaved() || !canShare) {
+    return null;
+  }
+
   return (
-    <SharingMenu>
-      <EmbedMenu
-        resource={question}
-        resourceType="question"
-        hasPublicLink={hasPublicLink}
-        onModalOpen={() => {}}
+    <>
+      <SharingModals
+        modalType={modalType}
+        onClose={() => setModalType(null)}
+        anchorEl={sharingMenuRef?.current}
       />
-      <QuestionAlertWidget
-        key="alerts"
-        className={cx(CS.hide, CS.smShow)}
-        canManageSubscriptions={canManageSubscriptions}
-        question={question}
-        // questionAlerts={questionAlerts}
-        // onCreateAlert={() => {}
-        //   // question.isSaved()
-        //   //   ? onOpenModal("create-alert")
-        //   //   : onOpenModal("save-question-before-alert")
-        // }
-      />
-    </SharingMenu>
+      <SharingMenu>
+        <PublicLinkMenuItem
+          hasPublicLink={hasPublicLink}
+          onClick={() => setModalType("question-public-link")}
+        />
+        <EmbedMenuItem
+          onClick={() => setModalType("question-embed")}
+        />
+      </SharingMenu>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { t } from "ttag";
 
-import type { EmbedMenuProps } from "metabase/dashboard/components/EmbedMenu/types";
 import {
   DashboardPublicLinkPopover,
   QuestionPublicLinkPopover,
@@ -9,6 +8,8 @@ import {
 import { useSelector } from "metabase/lib/redux";
 import { ResourceEmbedButton } from "metabase/public/components/ResourceEmbedButton";
 import { getSetting } from "metabase/selectors/settings";
+
+import type { EmbedMenuProps } from "./types";
 
 export const NonAdminEmbedMenu = ({
   resource,
