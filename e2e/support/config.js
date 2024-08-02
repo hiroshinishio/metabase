@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import installLogsPrinter from "cypress-terminal-report/src/installLogsPrinter";
+
 import {
   removeDirectory,
   verifyDownloadTasks,
@@ -46,6 +48,14 @@ const defaultConfig = {
   setupNodeEvents(on, config) {
     // `on` is used to hook into various events Cypress emits
     // `config` is the resolved Cypress config
+
+    /********************************************************************
+     **                     cypress-terminal-report                    **
+     ********************************************************************/
+    installLogsPrinter(on, {
+      printLogsToConsole: "always",
+    });
+
     /********************************************************************
      **                        PREPROCESSOR                            **
      ********************************************************************/
@@ -150,6 +160,7 @@ const defaultConfig = {
   specPattern: "e2e/test/**/*.cy.spec.{js,ts}",
   viewportHeight: 800,
   viewportWidth: 1280,
+  // enable video recording in run mode
   video: true,
   videoCompression: true,
 };

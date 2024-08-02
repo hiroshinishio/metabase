@@ -1,11 +1,12 @@
 import registerCypressGrep from "@cypress/grep"; // eslint-disable-line import/order
-registerCypressGrep();
-
+import installLogsCollector from "cypress-terminal-report/src/installLogsCollector";
 import "@cypress/skip-test/support";
 import "@testing-library/cypress/add-commands";
 import "cypress-real-events/support";
 import addContext from "mochawesome/addContext";
 import "./commands";
+
+registerCypressGrep();
 
 Cypress.on("uncaught:exception", (err, runnable) => false);
 
@@ -66,3 +67,14 @@ Cypress.on("window:load", window => {
     return addEventListener.apply(this, arguments);
   };
 });
+
+/********************************************************************
+ **                     cypress-terminal-report                     **
+ ********************************************************************/
+afterEach(() => {
+  cy.wait(50, { log: false }).then(() =>
+    addContext(Cypress.TerminalReport.getLogs("txt")),
+  );
+});
+
+installLogsCollector();
