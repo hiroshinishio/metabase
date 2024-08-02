@@ -58,7 +58,7 @@ export const DelayedLoadingAndErrorWrapper = ({
       return <span data-testid="loading-indicator" />;
     }
     if (loader) {
-      return loader;
+      return <>loader</>;
     }
     return (
       <LoadingAndErrorWrapper error={error} loading={loading} {...props}>
