@@ -52,9 +52,7 @@ const defaultConfig = {
     /********************************************************************
      **                     cypress-terminal-report                    **
      ********************************************************************/
-    installLogsPrinter(on, {
-      printLogsToConsole: "always",
-    });
+    installLogsPrinter(on);
 
     /********************************************************************
      **                        PREPROCESSOR                            **

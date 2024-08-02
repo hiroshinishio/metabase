@@ -77,4 +77,16 @@ afterEach(() => {
   );
 });
 
-installLogsCollector();
+installLogsCollector({
+  // ignoring cons:warn for now as we have lots of false positive warnings
+  collectTypes: [
+    "cons:log",
+    "cons:info",
+    /*'cons:warn',*/ "cons:error",
+    "cy:log",
+    "cy:xhr",
+    "cy:request",
+    "cy:intercept",
+    "cy:command",
+  ],
+});
