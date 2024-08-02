@@ -33,6 +33,10 @@ Cypress.on("test:after:run", (test, runnable) => {
       parent = parent.parent;
     }
     filename += `${titleToFileName(test.title)} (failed).png`;
+
+    // cypress-terminal-report
+    addContext({ test }, Cypress.TerminalReport.getLogs("txt"));
+
     addContext(
       { test },
       {
@@ -66,15 +70,6 @@ Cypress.on("window:load", window => {
 
     return addEventListener.apply(this, arguments);
   };
-});
-
-/********************************************************************
- **                     cypress-terminal-report                     **
- ********************************************************************/
-afterEach(() => {
-  cy.wait(50, { log: false }).then(() =>
-    addContext(Cypress.TerminalReport.getLogs("txt")),
-  );
 });
 
 installLogsCollector({
